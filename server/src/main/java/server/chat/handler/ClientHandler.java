@@ -72,7 +72,12 @@ public class ClientHandler {
 
             if (command.getType() == CommandType.AUTH) {
 
-                boolean isSuccessAuth = processAuthCommand(command);
+                boolean isSuccessAuth = false;
+                try {
+                    isSuccessAuth = processAuthCommand(command);
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
                 if (isSuccessAuth) {
                //     break;
                  return true;
@@ -90,7 +95,7 @@ public class ClientHandler {
 
 
 
-    private boolean processAuthCommand(Command command) throws IOException {
+    private boolean processAuthCommand(Command command) throws IOException, ClassNotFoundException {
         AuthCommandData cmdData = (AuthCommandData) command.getData();
         String login = cmdData.getLogin();
         String password = cmdData.getPassword();

@@ -2,5 +2,5 @@ package server.chat.auto;
 
 public interface AuthService {
 
-    String getUsernameByLoginAndPassword(String login, String password);
+    String getUsernameByLoginAndPassword(String login, String password) throws ClassNotFoundException;
 }
