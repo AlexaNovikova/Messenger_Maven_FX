@@ -2,8 +2,10 @@ package client.models;
 
 import ClientServer.Command;
 import ClientServer.commands.*;
+import client.NetworkClient;
 import client.controllers.ChatController;
 import javafx.application.Platform;
+import javafx.scene.control.Alert;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -20,6 +22,9 @@ public class Network {
 
     private ObjectOutputStream dataOutputStream;
     private ObjectInputStream dataInputStream;
+
+    public  boolean RegOK = false;
+    public boolean ChangeOk = false;
 
     private Socket socket;
 
@@ -155,6 +160,45 @@ public class Network {
         }
     }
 
+
+    public String sendRegisterCommand(String nick, String login, String password) {
+        try {
+            Command registerCommand = Command.registrationCommand(nick,login,password);
+            dataOutputStream.writeObject(registerCommand);
+
+            Command command = readCommand();
+            if (command == null) {
+                RegOK=false;
+              return "Неизвестная команда";
+
+            }
+
+            switch (command.getType()) {
+                case REG_OK: {
+                    RegOkCommandData data = (RegOkCommandData) command.getData();
+                    RegOK=true;
+                    return data.getMessageOKReg();
+                }
+
+                case REG_ERROR: {
+                    RegErrorCommandData data = (RegErrorCommandData) command.getData();
+                    RegOK=false;
+                   return data.getErrorMessage();
+                }
+
+                default: {
+                    RegOK=false;
+                  return   "Unknown type of command: " + command.getType();
+                }
+
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return e.getMessage();
+        }
+    }
+
     public String getUsername() {
         return username;
     }
@@ -186,6 +230,42 @@ public class Network {
             return null;
         }
     }
+
+    public String sendChangeNickCommand(String oldNick, String login, String password, String newNick) {
+        try {
+        Command nickChangeCommand = Command.nickChangeCommand(login,password,oldNick,newNick);
+        dataOutputStream.writeObject(nickChangeCommand);
+        Command command = readCommand();
+        if (command == null) {
+            ChangeOk=false;
+            return "Неизвестная команда";
+        }
+
+        switch (command.getType()) {
+            case CHANGE_OK: {
+                NickChangeOkCommandData data = (NickChangeOkCommandData) command.getData();
+                ChangeOk=true;
+                return data.getMessageOKChange();
+            }
+
+            case CHANGE_FAIL: {
+                ChangeErrorCommandData data = (ChangeErrorCommandData) command.getData();
+                ChangeOk=false;
+                return data.getErrorChangeMessage();
+            }
+
+            default: {
+                ChangeOk=false;
+                return  "Unknown type of command: " + command.getType();
+            }
+
+        }
+    }
+        catch (IOException e) {
+        e.printStackTrace();
+        return e.getMessage();
+    }
+}
 }
 
 

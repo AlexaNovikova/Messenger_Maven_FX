@@ -1,6 +1,8 @@
 package client;
 import client.controllers.AuthDialogController;
 import client.controllers.ChatController;
+import client.controllers.NickChangeController;
+import client.controllers.RegisterDialogController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -17,11 +19,10 @@ import java.util.List;
 
 public class NetworkClient extends Application {
 
-   public static List<String> USERS_TEST_DATA = new ArrayList<>();
-
-
     public Stage primaryStage;
     private Stage authStage;
+    private Stage registerStage;
+    private Stage nickChangeStage;
     private Network network;
     private ChatController chatController;
 
@@ -32,9 +33,6 @@ public class NetworkClient extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-       USERS_TEST_DATA.add("Алекс");
-        USERS_TEST_DATA.add("Павел");
-         USERS_TEST_DATA.add("Лев");
         this.primaryStage = primaryStage;
         network = new Network();
         if (!network.connect()) {
@@ -62,13 +60,30 @@ public class NetworkClient extends Application {
         primaryStage.setOnCloseRequest(event -> network.close());
     }
 
+    public void openRegistrationDialog() throws IOException {
+
+        FXMLLoader regLoader = new FXMLLoader();
+        regLoader.setLocation(NetworkClient.class.getResource("/views/register-dialog.fxml"));
+        Parent page = regLoader.load();
+        registerStage = new Stage();
+        registerStage.setTitle("Регистрация");
+        registerStage.initModality(Modality.WINDOW_MODAL);
+        registerStage.initOwner(authStage);
+        Scene scene = new Scene(page);
+        registerStage.setScene(scene);
+        registerStage.show();
+        RegisterDialogController registerDialogController = regLoader.getController();
+        registerDialogController.setNetwork(network);
+        registerDialogController.setNetworkClient(this);
+
+    }
+
     private void openAuthDialog(Stage primaryStage) throws IOException {
 
         FXMLLoader authLoader = new FXMLLoader();
         authLoader.setLocation(NetworkClient.class.getResource("/views/auth-dialog.fxml"));
         Parent page = authLoader.load();
         authStage = new Stage();
-
         authStage.setTitle("Авторизация");
         authStage.initModality(Modality.WINDOW_MODAL);
         authStage.initOwner(primaryStage);
@@ -88,6 +103,20 @@ public class NetworkClient extends Application {
         alert.showAndWait();
     }
 
+    public static void showOKMessage(String message) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Успех!");
+        alert.setHeaderText("Регистрация/изменения прошли успешно!");
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+    public static void showErrorRegMessage(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Ошибка!");
+        alert.setHeaderText("Регистрацию/изменения не удалось выполнить!");
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
 
     public Stage getPrimaryStage() {
         return primaryStage;
@@ -101,6 +130,28 @@ public class NetworkClient extends Application {
         chatController.setUsernameTitle(network.getUsername());
         network.waitMessage(chatController);
     }
+    public void closeReg() {
+        registerStage.close();
+    }
 
 
+    public void openNickChangeDialog() throws IOException {
+        FXMLLoader nickLoader = new FXMLLoader();
+        nickLoader.setLocation(NetworkClient.class.getResource("/views/changeNick.fxml"));
+        Parent page = nickLoader.load();
+         nickChangeStage = new Stage();
+        nickChangeStage.setTitle("Изменения ника.");
+       nickChangeStage.initModality(Modality.WINDOW_MODAL);
+      nickChangeStage.initOwner(authStage);
+        Scene scene = new Scene(page);
+        nickChangeStage.setScene(scene);
+       nickChangeStage.show();
+       NickChangeController nickChangeController = nickLoader.getController();
+        nickChangeController.setNetwork(network);
+       nickChangeController.setNetworkClient(this);
+    }
+
+    public void closeNickChange() {
+        nickChangeStage.close();
+    }
 }

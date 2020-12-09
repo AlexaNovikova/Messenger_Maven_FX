@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.List;
 
 public class ClientHandler {
 
@@ -40,29 +41,18 @@ public class ClientHandler {
 
         new Thread(() -> {
             try {
-                if (authentication());
+                 authentication();
                  readMessage();
                }
 
             catch (IOException e) {
                 System.out.println(e.getMessage());
             }
-            catch (MyRunTimeException e){
-                System.out.println("Время ожидания истекло!");
-            }
         }).start();
     }
 
-    private boolean authentication() throws IOException {
-        long timeStart = System.currentTimeMillis();
-        long timeEnd = timeStart+12000L;
-
-      while(true){
-          if (System.currentTimeMillis() > timeEnd){
-              sendMessage(Command.errorCommand("Допустимое время ожидания истекло!"));
-              throw new MyRunTimeException();
-
-          }
+    private void authentication() throws IOException {
+        while (true){
             Command command = readCommand();
 
             if (command == null) {
@@ -79,21 +69,76 @@ public class ClientHandler {
                     e.printStackTrace();
                 }
                 if (isSuccessAuth) {
-               //     break;
-                 return true;
+                   break;
+
                 }
 
             }
-            else
-            { sendMessage(Command.authErrorCommand("Ошибка авторизации"));
+
+            if (command.getType() == CommandType.REGISTER) {
+
+                boolean isSuccessReg = false;
+                try {
+                    isSuccessReg = processRegCommand(command);
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+//                if (isSuccessReg) continue;
 
             }
+            if (command.getType() == CommandType.NICK_CHANGE) {
+
+                boolean isSuccessChange = false;
+                try {
+                    isSuccessChange= processChangeNickCommand(command);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+//                if (isSuccessReg) continue;
+
+            }
+
         }
 
     }
 
+    private boolean processChangeNickCommand(Command command) throws IOException {
+        NickChangeCommandData changeData = (NickChangeCommandData) command.getData();
+        String login = changeData.getLogin();
+        String password = changeData.getPassword();
+        String oldNick = changeData.getOldNick();
+        String newNick = changeData.getNewNick();
 
+        List<String> usersOnline = myServer.getAllUsernames();
+        for (String user: usersOnline) {
+            if (oldNick.equals(user))
+            {sendMessage(Command.nickChangeFailCommand("Пользователь с таким ником уже в чате!"));
+            return false;}
+            if (newNick.equals(user))
+            {sendMessage(Command.nickChangeFailCommand("Ник занят!"));
+            return false;}
+        }
+        AuthService authService = myServer.getAuthService();
+        Integer resChange = authService.changeNick(login, password, oldNick, newNick);
 
+        if (resChange == 1) {
+            sendMessage(Command.nickChangeOKCommand());
+            return true;
+        }
+        if (resChange == 0) {
+            sendMessage(Command.nickChangeFailCommand("Не найден пользователь с такими данными!"));
+            return false;
+        }
+        if (resChange == -2) {
+            sendMessage(Command.nickChangeFailCommand("Ник занят!"));
+            return false;
+        }
+        else {
+            sendMessage(Command.nickChangeFailCommand("Ошибка."));
+            return false;
+        }
+
+    }
 
     private boolean processAuthCommand(Command command) throws IOException, ClassNotFoundException {
         AuthCommandData cmdData = (AuthCommandData) command.getData();
@@ -115,6 +160,30 @@ public class ClientHandler {
             return true;
         } else {
             sendMessage(Command.authErrorCommand("Логин или пароль не соответствуют действительности"));
+            return false;
+        }
+    }
+
+    private boolean processRegCommand(Command command) throws IOException, ClassNotFoundException {
+      SendRegisterCommandData regData = (SendRegisterCommandData) command.getData();
+        String nick = regData.getNick();
+        String login = regData.getLogin();
+        String password = regData.getPassword();
+
+        AuthService authService = myServer.getAuthService();
+        Integer resRegistration = authService.registration(nick,login,password);
+
+        if ( resRegistration==1)
+        {
+                sendMessage(Command.regOKCommand());
+                return true;
+            }
+        if (resRegistration==0)
+        {
+            sendMessage(Command.regFailCommand("Пользователь с таким ником/паролем/логином уже зарегистрирован!"));
+            return false;
+        } else {
+            sendMessage(Command.regFailCommand("Ошибка при регистрации."));
             return false;
         }
     }
