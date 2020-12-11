@@ -1,11 +1,6 @@
 package server.chat.auto;
 
-import server.chat.User;
-
 import java.sql.*;
-import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.List;
 
 public class BaseAuthService implements AuthService {
 
@@ -70,7 +65,7 @@ public Integer registration (String nick, String login, String password) {
             search.setString(1,newNick);
             ResultSet resultSet=search.executeQuery();
                if (resultSet.next()) {String name = resultSet.toString();
-                System.out.println(name);
+             //   System.out.println(name);
                 search.close();
                 resultSet.close();
                 return -2;
