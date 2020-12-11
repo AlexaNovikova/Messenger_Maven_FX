@@ -1,37 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-
+<?import javafx.scene.image.Image?>
 <AnchorPane prefHeight="400.0" prefWidth="601.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.ChatController">
     <children>
         <SplitPane dividerPositions="0.3" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <items>
                 <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                <children>
-                  <VBox layoutY="45.0" prefHeight="200.0" prefWidth="100.0">
+                  <VBox layoutX="26.0" layoutY="51.0" prefHeight="398.4" prefWidth="177.6" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
-                              <ListView fx:id="usersList" minHeight="-Infinity" minWidth="-Infinity" prefHeight="349.0" prefWidth="178.0" />
+                        <Label alignment="TOP_CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="178.0" text="Список контактов" VBox.vgrow="ALWAYS">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                           <cursor>
+                              <Cursor fx:constant="DEFAULT" />
+                           </cursor>
+                           <padding>
+                              <Insets top="7.0" />
+                           </padding>
+                        </Label>
+                              <ListView fx:id="usersList" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" nodeOrientation="LEFT_TO_RIGHT" prefHeight="361.0" prefWidth="178.0" VBox.vgrow="ALWAYS">
+                           <cursor>
+                              <Cursor fx:constant="DEFAULT" />
+                           </cursor>
+                        </ListView>
                      </children>
                   </VBox>
-                  <Label layoutX="16.0" layoutY="14.0" text="Список контактов">
-                     <font>
-                        <Font size="18.0" />
-                     </font>
-                  </Label>
                </children></AnchorPane>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="419.0" prefWidth="417.0">
                     <children>
-                        <SplitPane dividerPositions="0.8838383838383839" orientation="VERTICAL" prefHeight="398.0" prefWidth="486.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <SplitPane dividerPositions="0.8299697275479314" orientation="VERTICAL" prefHeight="398.0" prefWidth="486.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <items>
                                 <VBox prefHeight="200.0" prefWidth="100.0">
                                     <children>
@@ -60,24 +73,37 @@
                                                 </AnchorPane>
                                             </children>
                                         </HBox>
-                                        <TextArea fx:id="chatHistory" editable="false" maxHeight="1.7976931348623157E308" prefWidth="200.0" wrapText="true" VBox.vgrow="ALWAYS">
+                                        <TextArea fx:id="chatHistory" editable="false" maxHeight="1.7976931348623157E308" prefHeight="286.0" prefWidth="415.0" wrapText="true" VBox.vgrow="ALWAYS">
                                             <font>
                                                 <Font size="15.0" />
-                                            </font></TextArea>
+                                            </font>
+                              </TextArea>
                                     </children>
                                 </VBox>
-                                <AnchorPane maxHeight="50.0" minHeight="30.0" minWidth="0.0" prefWidth="160.0">
+                                <AnchorPane maxHeight="80.0" minHeight="30.0" minWidth="0.0" prefHeight="80.0" prefWidth="415.0">
                                     <children>
-                                        <HBox prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                        <HBox prefHeight="65.0" prefWidth="415.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                             <children>
-                                                <TextField fx:id="textField" maxHeight="1.7976931348623157E308" promptText="Ваше сообщение" HBox.hgrow="ALWAYS">
+                                                <TextField fx:id="textField" maxHeight="1.7976931348623157E308" prefHeight="58.0" prefWidth="281.0" promptText="Ваше сообщение" HBox.hgrow="ALWAYS">
                                                     <font>
                                                         <Font size="18.0" />
                                                     </font></TextField>
-                                                <Button fx:id="sendButton" maxHeight="1.7976931348623157E308" mnemonicParsing="false" prefHeight="44.0" prefWidth="134.0" text="Отправить">
+                                                <fx:define>
+                                                    <Image fx:id="btnImage" url="@pictures/send.png" />
+                                                </fx:define>
+                                                <Button fx:id="sendButton" mnemonicParsing="false" prefHeight="66.0" prefWidth="112.0">
                                                     <font>
                                                         <Font size="18.0" />
-                                                    </font></Button>
+                                                    </font>
+                                                <graphic>
+                                                    <ImageView fitHeight="53.0" fitWidth="115.0" nodeOrientation="INHERIT">
+                                             <cursor>
+                                                <Cursor fx:constant="DEFAULT" />
+                                             </cursor>
+                                             <image>
+                                                <Image url="@pictures/send.png" />
+                                             </image></ImageView>
+                                                </graphic></Button>
                                             </children>
                                         </HBox>
                                     </children>

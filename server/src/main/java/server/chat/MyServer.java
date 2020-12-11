@@ -71,7 +71,7 @@ public synchronized void subscribe(ClientHandler clientHandler) throws IOExcepti
         broadcastMessage(null, Command.updateUsersListCommand(usernames));
         }
 
-private List<String> getAllUsernames() {
+public List<String> getAllUsernames() {
         List<String> usernames = new ArrayList<>();
         for (ClientHandler client : clients) {
         usernames.add(client.getClientUsername());

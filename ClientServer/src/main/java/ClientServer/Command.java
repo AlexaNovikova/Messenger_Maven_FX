@@ -73,6 +73,43 @@ public class Command implements Serializable {
         return command;
     }
 
+    public static Command registrationCommand(String nick, String login, String password) {
+        Command command = new Command();
+        command.type = CommandType.REGISTER;
+        command.data = new SendRegisterCommandData(login,password,nick);
+        return command;
+    }
+    public static Command regOKCommand() {
+        Command command = new Command();
+        command.type = CommandType.REG_OK;
+        command.data= new RegOkCommandData("Регистрация прошла успешно!");
+        return command;
+    }
+    public static Command regFailCommand(String errorMessage){
+        Command command = new Command();
+        command.type = CommandType.REG_ERROR;
+        command.data=new RegErrorCommandData(errorMessage);
+        return command;
+    }
+    public static Command nickChangeCommand(String login, String password, String oldNick, String newNick) {
+        Command command = new Command();
+        command.type = CommandType.NICK_CHANGE;
+        command.data = new NickChangeCommandData(login,password,oldNick,newNick);
+        return command;
+    }
+    public static Command nickChangeOKCommand() {
+        Command command = new Command();
+        command.type = CommandType.CHANGE_OK;
+        command.data= new NickChangeOkCommandData("Ник успешно изменен!");
+        return command;
+    }
+    public static Command nickChangeFailCommand(String errorMessage){
+        Command command = new Command();
+        command.type = CommandType.CHANGE_FAIL;
+        command.data=new ChangeErrorCommandData(errorMessage);
+        return command;
+    }
+
     public static Command endCommand() {
         Command command = new Command();
         command.type = CommandType.END;

@@ -33,7 +33,7 @@ public class ChatController {
 
     @FXML
     public void initialize() {
-        usersList.setItems(FXCollections.observableArrayList(NetworkClient.USERS_TEST_DATA));
+        usersList.setItems(FXCollections.observableArrayList());
         sendButton.setOnAction(event -> ChatController.this.sendMessage());
         textField.setOnAction(event -> ChatController.this.sendMessage());
 

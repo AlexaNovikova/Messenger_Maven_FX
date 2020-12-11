@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
+import java.io.IOException;
 import java.util.Timer;
 
 public class AuthDialogController {
@@ -36,7 +37,23 @@ public class AuthDialogController {
 
 
     }
+    @FXML
+    private void registerOpen(){
+        try {
+            networkClient.openRegistrationDialog();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
+    @FXML
+    private void openChangeNickView(){
+        try {
+            networkClient.openNickChangeDialog();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     public void setNetwork(Network network) {
         this.network = network;
     }

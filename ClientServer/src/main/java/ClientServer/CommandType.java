@@ -9,5 +9,11 @@ public enum CommandType {
     INFO_MESSAGE,
     ERROR,
     END,
-    UPDATE_USERS_LIST
+    UPDATE_USERS_LIST,
+    REGISTER,
+    REG_OK,
+    REG_ERROR,
+    NICK_CHANGE,
+    CHANGE_OK,
+    CHANGE_FAIL
 }
