@@ -15,5 +15,8 @@ public enum CommandType {
     REG_ERROR,
     NICK_CHANGE,
     CHANGE_OK,
-    CHANGE_FAIL
+    CHANGE_FAIL,
+    END_CONNECTION_WANT,
+    END_CONNECTION_OK
+
 }

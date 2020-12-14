@@ -23,6 +23,7 @@ public class ClientHandler {
     private ObjectOutputStream out;
     private String clientUsername;
 
+
     public ClientHandler(MyServer myServer, Socket clientSocket) {
         this.myServer = myServer;
         this.clientSocket = clientSocket;
@@ -48,7 +49,9 @@ public class ClientHandler {
             catch (IOException e) {
                 System.out.println(e.getMessage());
             }
+
         }).start();
+
     }
 
     private void authentication() throws IOException {
@@ -153,7 +156,7 @@ public class ClientHandler {
                 return false;
             }
 
-            sendMessage(Command.authOkCommand(clientUsername));
+            sendMessage(Command.authOkCommand(clientUsername, login));
             String message = String.format(">>> %s присоединился к чату", clientUsername);
             myServer.broadcastMessage(this, Command.messageInfoCommand(message, null));
             myServer.subscribe(this);
@@ -221,6 +224,10 @@ public class ClientHandler {
                     String recipient = data.getReceiver();
                     String message = data.getMessage();
                     myServer.sendPrivateMessage(recipient, Command.messageInfoCommand(message, this.clientUsername));
+                    break;
+                case END_CONNECTION_WANT:
+                  //  sendMessage(Command.endConnectionFromServer(this.clientUsername));
+                    myServer.unSubscribe(this);
                     break;
                 default:
                     String errorMessage = "Неизвестный тип команды" + command.getType();

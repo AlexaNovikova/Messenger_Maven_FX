@@ -11,14 +11,18 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class Network {
 
     private static final String SERVER_ADRESS = "localhost";
     private static final int SERVER_PORT = 8189;
-
-    private final String host;
     private final int port;
+    private final String host;
+
 
     private ObjectOutputStream dataOutputStream;
     private ObjectInputStream dataInputStream;
@@ -29,6 +33,7 @@ public class Network {
     private Socket socket;
 
     private String username;
+    private String login;
 
     public ObjectOutputStream getDataOutputStream() {
         return dataOutputStream;
@@ -47,6 +52,7 @@ public class Network {
         this.port = port;
     }
 
+
     public boolean connect() {
         try {
             socket = new Socket(host, port);
@@ -64,14 +70,14 @@ public class Network {
 
     public void close() {
         try {
-            socket.close();
+           sendEndConnectionCommand();
+           socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void waitMessage(ChatController chatController) {
-
         Thread thread = new Thread( () -> {
             try { while (true) {
 
@@ -113,8 +119,8 @@ public class Network {
 
             }
             } catch (IOException e) {
-                e.printStackTrace();
-                System.out.println("Соединение потеряно!");
+//                e.printStackTrace();
+//                System.out.println("Соединение потеряно!");
             }
         });
         thread.setDaemon(true);
@@ -136,6 +142,7 @@ public class Network {
                 case AUTH_OK: {
                     AuthOkCommandData data = (AuthOkCommandData) command.getData();
                     this.username = data.getUsername();
+                    this.login = data.getLogin();
                     return null;
                 }
 
@@ -199,8 +206,23 @@ public class Network {
         }
     }
 
+    public void sendEndConnectionCommand (){
+        try {
+            Command endConnectionCommand = Command.endConnectionFromClient(this.username);
+            dataOutputStream.writeObject(endConnectionCommand);
+
+      }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public String getUsername() {
         return username;
+    }
+
+    public String getLogin() {
+        return login;
     }
 
     public void sendMessage(String message) throws IOException {

@@ -4,6 +4,7 @@ import client.controllers.ChatController;
 import client.controllers.NickChangeController;
 import client.controllers.RegisterDialogController;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -56,8 +57,7 @@ public class NetworkClient extends Application {
         chatController = mainLoader.getController();
         chatController.setNetwork(network);
 
-
-        primaryStage.setOnCloseRequest(event -> network.close());
+        primaryStage.setOnCloseRequest(event -> {chatController.saveHistory(); network.close();});
     }
 
     public void openRegistrationDialog() throws IOException {
@@ -127,9 +127,11 @@ public class NetworkClient extends Application {
         primaryStage.show();
         primaryStage.setTitle(network.getUsername());
         System.out.println(network.getUsername());
-        chatController.setUsernameTitle(network.getUsername());
+        chatController.showChatHistory();
         network.waitMessage(chatController);
+
     }
+
     public void closeReg() {
         registerStage.close();
     }

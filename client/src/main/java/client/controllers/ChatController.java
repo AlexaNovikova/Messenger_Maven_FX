@@ -7,9 +7,15 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import client.models.*;
 import javafx.scene.input.MouseEvent;
+import org.omg.CORBA.PUBLIC_MEMBER;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -24,11 +30,11 @@ public class ChatController {
     private TextArea chatHistory;
     @FXML
     private TextField textField;
-    @FXML
-    private Label usernameTitle;
+
 
     private Network network;
     private String selectedRecipient;
+
 
 
     @FXML
@@ -103,12 +109,58 @@ public class ChatController {
         NetworkClient.showErrorMessage(message, title);
     }
 
-    public void setUsernameTitle(String usernameTitle) {
-        this.usernameTitle.setText(usernameTitle);
-        System.out.println(usernameTitle);
-    }
+
 
     public void updateUsers(List<String> users) {
         usersList.setItems(FXCollections.observableArrayList(users));
+    }
+
+    public void showChatHistory(){
+        try{  String fileName = "client/src/main/resources/history/history_"+network.getLogin()+".txt";
+        //   Path historyFile = Paths.get("client/src/main/resources/1.txt");
+        if (!Files.exists(Paths.get(fileName))) {
+              Path path = Files.createFile(Paths.get(fileName));
+
+        }
+        List<String> history = Files.readAllLines(Paths.get(fileName));
+        int min;
+         min=(history.size()>100)?(history.size()-100):0;
+         for (int i=min; i<history.size(); i++){
+             chatHistory.appendText(history.get(i));
+             chatHistory.appendText(System.lineSeparator());
+         }
+
+//            List<String> history = new ArrayList<>();
+//            history.addAll(Files.readAllLines(Paths.get(fileName)));
+//            history.
+//            history.subList(history.size()-100, history.size());
+//
+//            for (String s :
+//                    history) {
+//             chatHistory.setText(s);
+//            }
+//         chatHistory.setText(Files.readAllLines(Paths.get(fileName)).toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveHistory()  {
+        String fileName = "client/src/main/resources/history/history_"+network.getLogin()+".txt";
+        int min;
+//        if (chatHistory.getLength()>100) {min = chatHistory.getLength()-100;}
+//        else min=1;
+        String history = chatHistory.getText();
+        try {
+            Files.write(Paths.get(fileName), Collections.singleton(history));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+//        byte[] bytes = history.getBytes();
+//        try {
+//            Files.write(Paths.get(fileName),bytes);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 }

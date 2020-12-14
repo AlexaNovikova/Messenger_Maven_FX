@@ -25,10 +25,10 @@ public class Command implements Serializable {
         return command;
     }
 
-    public static Command authOkCommand(String username) {
+    public static Command authOkCommand(String username, String login) {
         Command command = new Command();
         command.type = CommandType.AUTH_OK;
-        command.data = new AuthOkCommandData(username);
+        command.data = new AuthOkCommandData(username, login);
         return command;
     }
 
@@ -116,6 +116,19 @@ public class Command implements Serializable {
         return command;
     }
 
+    public static Command endConnectionFromClient(String clientNick) {
+        Command command = new Command();
+        command.type = CommandType.END_CONNECTION_WANT;
+        command.data = new ConnectionCloseFromClientCommandData(clientNick);
+        return command;
+    }
+
+    public static Command endConnectionFromServer (String clientNick) {
+        Command command = new Command();
+        command.type = CommandType.END_CONNECTION_OK;
+        command.data = new ConnectionCloseFromClientCommandData(clientNick);
+        return command;
+    }
 }
 
 
