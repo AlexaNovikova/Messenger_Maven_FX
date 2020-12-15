@@ -66,6 +66,10 @@ public class ChatController {
 
     }
 
+    public TextArea getChatHistory() {
+        return chatHistory;
+    }
+
     private void sendMessage() {
         String message = textField.getText();
         textField.clear();
@@ -99,8 +103,11 @@ public class ChatController {
     public void appendMessage(String message) {
         String timestamp = DateFormat.getInstance().format(new Date());
         chatHistory.appendText(timestamp);
+        History.saveMessage(timestamp);
         chatHistory.appendText(System.lineSeparator());
         chatHistory.appendText(message);
+        History.saveMessage(message);
+        History.saveMessage(System.lineSeparator());
         chatHistory.appendText(System.lineSeparator());
         chatHistory.appendText(System.lineSeparator());
     }
@@ -115,52 +122,6 @@ public class ChatController {
         usersList.setItems(FXCollections.observableArrayList(users));
     }
 
-    public void showChatHistory(){
-        try{  String fileName = "client/src/main/resources/history/history_"+network.getLogin()+".txt";
-        //   Path historyFile = Paths.get("client/src/main/resources/1.txt");
-        if (!Files.exists(Paths.get(fileName))) {
-              Path path = Files.createFile(Paths.get(fileName));
 
-        }
-        List<String> history = Files.readAllLines(Paths.get(fileName));
-        int min;
-         min=(history.size()>100)?(history.size()-100):0;
-         for (int i=min; i<history.size(); i++){
-             chatHistory.appendText(history.get(i));
-             chatHistory.appendText(System.lineSeparator());
-         }
 
-//            List<String> history = new ArrayList<>();
-//            history.addAll(Files.readAllLines(Paths.get(fileName)));
-//            history.
-//            history.subList(history.size()-100, history.size());
-//
-//            for (String s :
-//                    history) {
-//             chatHistory.setText(s);
-//            }
-//         chatHistory.setText(Files.readAllLines(Paths.get(fileName)).toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void saveHistory()  {
-        String fileName = "client/src/main/resources/history/history_"+network.getLogin()+".txt";
-        int min;
-//        if (chatHistory.getLength()>100) {min = chatHistory.getLength()-100;}
-//        else min=1;
-        String history = chatHistory.getText();
-        try {
-            Files.write(Paths.get(fileName), Collections.singleton(history));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-//        byte[] bytes = history.getBytes();
-//        try {
-//            Files.write(Paths.get(fileName),bytes);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-    }
 }

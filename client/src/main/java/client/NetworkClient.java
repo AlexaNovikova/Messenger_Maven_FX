@@ -1,8 +1,5 @@
 package client;
-import client.controllers.AuthDialogController;
-import client.controllers.ChatController;
-import client.controllers.NickChangeController;
-import client.controllers.RegisterDialogController;
+import client.controllers.*;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -57,7 +54,7 @@ public class NetworkClient extends Application {
         chatController = mainLoader.getController();
         chatController.setNetwork(network);
 
-        primaryStage.setOnCloseRequest(event -> {chatController.saveHistory(); network.close();});
+        primaryStage.setOnCloseRequest(event -> {History.closeWriter(); network.close();});
     }
 
     public void openRegistrationDialog() throws IOException {
@@ -127,7 +124,8 @@ public class NetworkClient extends Application {
         primaryStage.show();
         primaryStage.setTitle(network.getUsername());
         System.out.println(network.getUsername());
-        chatController.showChatHistory();
+        History.showChatHistory(network.login,chatController.getChatHistory());
+        History.startWriter(network.login);
         network.waitMessage(chatController);
 
     }

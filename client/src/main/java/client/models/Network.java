@@ -33,7 +33,7 @@ public class Network {
     private Socket socket;
 
     private String username;
-    private String login;
+    public String login;
 
     public ObjectOutputStream getDataOutputStream() {
         return dataOutputStream;
