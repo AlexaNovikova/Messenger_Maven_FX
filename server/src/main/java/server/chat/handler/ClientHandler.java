@@ -9,11 +9,14 @@ import server.chat.*;
 import server.chat.auto.AuthService;
 import server.chat.auto.AuthService;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ClientHandler {
 
@@ -25,7 +28,7 @@ public class ClientHandler {
 
 
     public ClientHandler(MyServer myServer, Socket clientSocket) {
-        this.myServer = myServer;
+       this.myServer = myServer;
         this.clientSocket = clientSocket;
 //        try {
 //            clientSocket.setSoTimeout(1000);
@@ -39,19 +42,15 @@ public class ClientHandler {
         in = new ObjectInputStream(clientSocket.getInputStream());
         out = new ObjectOutputStream(clientSocket.getOutputStream());
 
-
-        new Thread(() -> {
-            try {
-                 authentication();
-                 readMessage();
-               }
-
-            catch (IOException e) {
-                System.out.println(e.getMessage());
-            }
-
-        }).start();
-
+//        new Thread(() -> {
+        try {
+             authentication();
+             readMessage();
+         }
+catch (EOFException e){
+   in.close();
+   out.close();}
+//
     }
 
     private void authentication() throws IOException {

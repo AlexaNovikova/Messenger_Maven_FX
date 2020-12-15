@@ -13,12 +13,15 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MyServer {
 
     private final ServerSocket serverSocket;
     private final AuthService authService;
     private final List<ClientHandler> clients = new ArrayList<>();
+    private ExecutorService service;
 
     public MyServer(int port) throws IOException {
         this.serverSocket = new ServerSocket(port);
@@ -27,7 +30,7 @@ public class MyServer {
 
 public void start() throws IOException {
         System.out.println("Сервер запущен!");
-
+        service = Executors.newFixedThreadPool(5);
         try {
         while (true) {
         waitAndProcessNewClientConnection();
@@ -44,7 +47,13 @@ private void waitAndProcessNewClientConnection() throws IOException {
         System.out.println("Ожидание пользователя...");
         Socket clientSocket = serverSocket.accept();
         System.out.println("Клиент подключился!");
-        processClientConnection(clientSocket);
+        service.execute(()-> {
+                try {
+                        processClientConnection(clientSocket);
+                } catch (IOException e) {
+                        e.printStackTrace();
+                }
+        });
         }
 
 private void processClientConnection(Socket clientSocket) throws IOException {

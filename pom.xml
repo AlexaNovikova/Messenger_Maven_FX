@@ -12,6 +12,7 @@
         <module>client</module>
         <module>server</module>
         <module>ClientServer</module>
+        <module>lesson4</module>
     </modules>
 
 
