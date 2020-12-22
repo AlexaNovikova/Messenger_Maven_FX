@@ -17,6 +17,7 @@ import java.net.Socket;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
 
 public class ClientHandler {
 
@@ -71,10 +72,11 @@ catch (EOFException e){
                     e.printStackTrace();
                 }
                 if (isSuccessAuth) {
+                    MyServer.logger.log(Level.INFO, "Авторизация прошла успешно");
                    break;
 
                 }
-
+                MyServer.logger.log(Level.INFO, "Авторизация не удалась");
             }
 
             if (command.getType() == CommandType.REGISTER) {
@@ -125,6 +127,7 @@ catch (EOFException e){
 
         if (resChange == 1) {
             sendMessage(Command.nickChangeOKCommand());
+            MyServer.logger.log(Level.INFO, "Пользователь успешно изменил ник");
             return true;
         }
         if (resChange == 0) {
@@ -137,6 +140,7 @@ catch (EOFException e){
         }
         else {
             sendMessage(Command.nickChangeFailCommand("Ошибка."));
+            MyServer.logger.log(Level.SEVERE, "Ошибка при смене ника.");
             return false;
         }
 
@@ -178,7 +182,8 @@ catch (EOFException e){
         if ( resRegistration==1)
         {
                 sendMessage(Command.regOKCommand());
-                return true;
+                MyServer.logger.log(Level.INFO,"Регистрация прошла успешно");
+                 return true;
             }
         if (resRegistration==0)
         {
@@ -186,6 +191,7 @@ catch (EOFException e){
             return false;
         } else {
             sendMessage(Command.regFailCommand("Ошибка при регистрации."));
+            MyServer.logger.log(Level.SEVERE,"Ошибка при регистрации.");
             return false;
         }
     }
@@ -195,6 +201,7 @@ catch (EOFException e){
             return (Command) in.readObject();
         } catch (ClassNotFoundException e) {
             String errorMessage = "Получен неизвестный объект";
+            MyServer.logger.log(Level.SEVERE, "Получен неизвестный объект.");
             System.err.println(errorMessage);
             e.printStackTrace();
             return null;

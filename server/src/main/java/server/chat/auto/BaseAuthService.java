@@ -130,7 +130,8 @@ public void authStatement () throws SQLException {
             return nick;
 
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+
+           // throwables.printStackTrace();
         }
         finally {
             disconnect();

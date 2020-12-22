@@ -10,6 +10,7 @@
         <module name="client" />
         <module name="server" />
         <module name="ClientServer" />
+        <module name="lesson6" />
       </profile>
     </annotationProcessing>
   </component>
