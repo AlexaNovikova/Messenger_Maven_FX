@@ -2,28 +2,38 @@ package client.models;
 
 import ClientServer.Command;
 import ClientServer.commands.*;
+import client.NetworkClient;
 import client.controllers.ChatController;
 import javafx.application.Platform;
+import javafx.scene.control.Alert;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class Network {
 
     private static final String SERVER_ADRESS = "localhost";
     private static final int SERVER_PORT = 8189;
-
-    private final String host;
     private final int port;
+    private final String host;
+
 
     private ObjectOutputStream dataOutputStream;
     private ObjectInputStream dataInputStream;
 
+    public  boolean RegOK = false;
+    public boolean ChangeOk = false;
+
     private Socket socket;
 
     private String username;
+    public String login;
 
     public ObjectOutputStream getDataOutputStream() {
         return dataOutputStream;
@@ -42,6 +52,7 @@ public class Network {
         this.port = port;
     }
 
+
     public boolean connect() {
         try {
             socket = new Socket(host, port);
@@ -59,14 +70,14 @@ public class Network {
 
     public void close() {
         try {
-            socket.close();
+           sendEndConnectionCommand();
+           socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void waitMessage(ChatController chatController) {
-
         Thread thread = new Thread( () -> {
             try { while (true) {
 
@@ -108,8 +119,8 @@ public class Network {
 
             }
             } catch (IOException e) {
-                e.printStackTrace();
-                System.out.println("Соединение потеряно!");
+//                e.printStackTrace();
+//                System.out.println("Соединение потеряно!");
             }
         });
         thread.setDaemon(true);
@@ -131,6 +142,7 @@ public class Network {
                 case AUTH_OK: {
                     AuthOkCommandData data = (AuthOkCommandData) command.getData();
                     this.username = data.getUsername();
+                    this.login = data.getLogin();
                     return null;
                 }
 
@@ -155,8 +167,62 @@ public class Network {
         }
     }
 
+
+    public String sendRegisterCommand(String nick, String login, String password) {
+        try {
+            Command registerCommand = Command.registrationCommand(nick,login,password);
+            dataOutputStream.writeObject(registerCommand);
+
+            Command command = readCommand();
+            if (command == null) {
+                RegOK=false;
+              return "Неизвестная команда";
+
+            }
+
+            switch (command.getType()) {
+                case REG_OK: {
+                    RegOkCommandData data = (RegOkCommandData) command.getData();
+                    RegOK=true;
+                    return data.getMessageOKReg();
+                }
+
+                case REG_ERROR: {
+                    RegErrorCommandData data = (RegErrorCommandData) command.getData();
+                    RegOK=false;
+                   return data.getErrorMessage();
+                }
+
+                default: {
+                    RegOK=false;
+                  return   "Unknown type of command: " + command.getType();
+                }
+
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return e.getMessage();
+        }
+    }
+
+    public void sendEndConnectionCommand (){
+        try {
+            Command endConnectionCommand = Command.endConnectionFromClient(this.username);
+            dataOutputStream.writeObject(endConnectionCommand);
+
+      }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public String getUsername() {
         return username;
+    }
+
+    public String getLogin() {
+        return login;
     }
 
     public void sendMessage(String message) throws IOException {
@@ -186,6 +252,42 @@ public class Network {
             return null;
         }
     }
+
+    public String sendChangeNickCommand(String oldNick, String login, String password, String newNick) {
+        try {
+        Command nickChangeCommand = Command.nickChangeCommand(login,password,oldNick,newNick);
+        dataOutputStream.writeObject(nickChangeCommand);
+        Command command = readCommand();
+        if (command == null) {
+            ChangeOk=false;
+            return "Неизвестная команда";
+        }
+
+        switch (command.getType()) {
+            case CHANGE_OK: {
+                NickChangeOkCommandData data = (NickChangeOkCommandData) command.getData();
+                ChangeOk=true;
+                return data.getMessageOKChange();
+            }
+
+            case CHANGE_FAIL: {
+                ChangeErrorCommandData data = (ChangeErrorCommandData) command.getData();
+                ChangeOk=false;
+                return data.getErrorChangeMessage();
+            }
+
+            default: {
+                ChangeOk=false;
+                return  "Unknown type of command: " + command.getType();
+            }
+
+        }
+    }
+        catch (IOException e) {
+        e.printStackTrace();
+        return e.getMessage();
+    }
+}
 }
 
 
