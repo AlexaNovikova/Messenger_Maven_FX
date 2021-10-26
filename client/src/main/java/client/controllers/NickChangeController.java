@@ -34,8 +34,8 @@ public class NickChangeController {
          return;
      }
      String nickChangeInfo = network.sendChangeNickCommand(oldNick,login,password, newNick);
-     if (network.ChangeOk) NetworkClient.showOKMessage(nickChangeInfo);
-     if (!(network.ChangeOk)) NetworkClient.showErrorRegMessage(nickChangeInfo);
+     if (network.isNickIsSuccessfullyChanged()) NetworkClient.showOKMessage(nickChangeInfo);
+     if (!(network.isNickIsSuccessfullyChanged())) NetworkClient.showErrorRegMessage(nickChangeInfo);
      networkClient.closeNickChange();
  }
 

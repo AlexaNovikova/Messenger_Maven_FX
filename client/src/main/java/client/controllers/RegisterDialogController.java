@@ -29,9 +29,9 @@ public class RegisterDialogController {
             NetworkClient.showErrorMessage("Поля не должны быть пустыми", "Ошибка ввода");
             return;
         }
-          String regInfo = network.sendRegisterCommand(nick,login,password);
-          if (network.RegOK) NetworkClient.showOKMessage(regInfo);
-          if (!(network.RegOK)) NetworkClient.showErrorRegMessage(regInfo);
+          String regInfo = network.sendRegisterCommandAndGetAnswerFromServer(nick,login,password);
+          if (network.isServerConfirmRegistration()) NetworkClient.showOKMessage(regInfo);
+          if (!(network.isServerConfirmRegistration())) NetworkClient.showErrorRegMessage(regInfo);
           networkClient.closeReg();
     }
 

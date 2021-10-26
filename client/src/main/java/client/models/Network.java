@@ -28,8 +28,8 @@ public class Network {
     private ObjectOutputStream dataOutputStream;
     private ObjectInputStream dataInputStream;
 
-    public boolean RegOK = false;
-    public boolean ChangeOk = false;
+    private boolean serverConfirmRegistration = false;
+    public boolean nickIsSuccessfullyChanged = false;
 
     private Socket socket;
 
@@ -75,6 +75,7 @@ public class Network {
             try {
                 while (true) {
                     Command command = readCommand();
+                    messageService.setChatController(chatController);
                     messageService.handle(command);
                 }
             } catch (IOException e) {
@@ -93,12 +94,11 @@ public class Network {
             dataOutputStream.writeObject(authCommand);
             Command serverCommand = readCommand();
             boolean serverConfirmAuthentication = messageService.handleServerAuthenticationAnswer(serverCommand);
-            if(serverConfirmAuthentication){
+            if (serverConfirmAuthentication) {
                 this.username = messageService.getUserNameFromServer(serverCommand);
                 this.login = messageService.getLoginFromServer(serverCommand);
                 return "OK";
-            }
-            else return messageService.getErrorAuthenticationMessageFromServer(serverCommand);
+            } else return messageService.getErrorAuthenticationMessageFromServer(serverCommand);
         } catch (IOException e) {
             e.printStackTrace();
             return e.getMessage();
@@ -106,36 +106,15 @@ public class Network {
     }
 
 
-    public String sendRegisterCommand(String nick, String login, String password) {
+    public String sendRegisterCommandAndGetAnswerFromServer(String nick, String login, String password) {
         try {
             Command registerCommand = Command.registrationCommand(nick, login, password);
             dataOutputStream.writeObject(registerCommand);
             Command command = readCommand();
-            if (command == null) {
-                RegOK = false;
-                return "Неизвестная команда";
-
-            }
-
-            switch (command.getType()) {
-                case REG_OK: {
-                    RegOkCommandData data = (RegOkCommandData) command.getData();
-                    RegOK = true;
-                    return data.getMessageOKReg();
-                }
-
-                case REG_ERROR: {
-                    RegErrorCommandData data = (RegErrorCommandData) command.getData();
-                    RegOK = false;
-                    return data.getErrorMessage();
-                }
-
-                default: {
-                    RegOK = false;
-                    return "Unknown type of command: " + command.getType();
-                }
-
-            }
+            boolean serverConfirmRegistration = messageService.handleServerRegistrationAnswer(command);
+            if (serverConfirmRegistration) {
+                return messageService.getServerRegistrationConfirmation(command);
+            } else return messageService.getServerRegistrationError(command);
         } catch (IOException e) {
             e.printStackTrace();
             return e.getMessage();
@@ -154,10 +133,6 @@ public class Network {
 
     public String getUsername() {
         return username;
-    }
-
-    public String getLogin() {
-        return login;
     }
 
     public void sendMessage(String message) throws IOException {
@@ -192,34 +167,22 @@ public class Network {
             Command nickChangeCommand = Command.nickChangeCommand(login, password, oldNick, newNick);
             dataOutputStream.writeObject(nickChangeCommand);
             Command command = readCommand();
-            if (command == null) {
-                ChangeOk = false;
-                return "Неизвестная команда";
-            }
-
-            switch (command.getType()) {
-                case CHANGE_OK: {
-                    NickChangeOkCommandData data = (NickChangeOkCommandData) command.getData();
-                    ChangeOk = true;
-                    return data.getMessageOKChange();
-                }
-
-                case CHANGE_FAIL: {
-                    ChangeErrorCommandData data = (ChangeErrorCommandData) command.getData();
-                    ChangeOk = false;
-                    return data.getErrorChangeMessage();
-                }
-
-                default: {
-                    ChangeOk = false;
-                    return "Unknown type of command: " + command.getType();
-                }
-
-            }
+            boolean nickIsSuccessfullyChanged = messageService.handleServerChangeNickResultAnswer(command);
+            if (nickIsSuccessfullyChanged) {
+                return messageService.getNickChangeResult(command);
+            } else return messageService.getErrorChangeFromServer(command);
         } catch (IOException e) {
             e.printStackTrace();
             return e.getMessage();
         }
+    }
+
+    public boolean isServerConfirmRegistration() {
+        return serverConfirmRegistration;
+    }
+
+    public boolean isNickIsSuccessfullyChanged() {
+        return nickIsSuccessfullyChanged;
     }
 }
 
