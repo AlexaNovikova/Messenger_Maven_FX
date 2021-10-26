@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane prefHeight="302.0" prefWidth="449.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.NickChangeController">
+   <children>
+      <Label layoutX="42.0" layoutY="35.0" text="Логин">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="42.0" layoutY="81.0" text="Пароль">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="44.0" layoutY="139.0" text="Старый ник">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="46.0" layoutY="191.0" text="Новый ник">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <TextField fx:id="loginField" layoutX="127.0" layoutY="29.0" prefHeight="39.0" prefWidth="279.0">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </TextField>
+      <TextField fx:id="passField" layoutX="127.0" layoutY="75.0" prefHeight="39.0" prefWidth="279.0">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </TextField>
+      <TextField fx:id="oldNickField" layoutX="148.0" layoutY="133.0" prefHeight="39.0" prefWidth="256.0">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </TextField>
+      <TextField fx:id="newNickField" layoutX="148.0" layoutY="185.0" prefHeight="39.0" prefWidth="256.0">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </TextField>
+      <Button layoutX="127.0" layoutY="241.0" mnemonicParsing="false" onAction="#changeNick" text="Внести изменения">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Button>
+   </children>
+</AnchorPane>
