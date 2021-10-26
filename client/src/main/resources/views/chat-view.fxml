@@ -99,13 +99,13 @@
                                                         <Font size="18.0" />
                                                     </font>
                                                 <graphic>
-                                                    <ImageView fitHeight="53.0" fitWidth="115.0" nodeOrientation="INHERIT">
-                                             <cursor>
-                                                <Cursor fx:constant="DEFAULT" />
-                                             </cursor>
-                                             <image>
-                                                <Image url="@pictures/send.png" />
-                                             </image></ImageView>
+                                                    <ImageView fitHeight="53.0" fitWidth="115.0"
+                                                               nodeOrientation="INHERIT">
+                                                        <cursor>
+                                                            <Cursor fx:constant="DEFAULT"/>
+                                                        </cursor>
+                                                        <Image url="@pictures/send.png"/>
+                                                    </ImageView>
                                                 </graphic>
                                        <effect>
                                           <InnerShadow color="#513c3c" />

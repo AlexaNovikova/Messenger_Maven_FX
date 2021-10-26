@@ -1,7 +1,5 @@
 package client.controllers;
 
-import javafx.fxml.FXML;
-import javafx.collections.FXCollections;
 import javafx.scene.control.TextArea;
 
 import java.io.FileNotFoundException;
@@ -17,20 +15,21 @@ import java.util.List;
 public class History {
     public static PrintWriter writer;
 
-    private static String fileHistoryNameByLogin (String login) {
-        return "history/history_"+login+".txt";
+    private static String fileHistoryNameByLogin(String login) {
+        return "history/history_" + login + ".txt";
     }
 
-    public static void showChatHistory(String login, TextArea chatHistory){
-        try{  String fileName = fileHistoryNameByLogin(login);
+    public static void showChatHistory(String login, TextArea chatHistory) {
+        try {
+            String fileName = fileHistoryNameByLogin(login);
             if (!Files.exists(Paths.get(fileName))) {
                 Path path = Files.createFile(Paths.get(fileName));
             }
             StringBuilder sb = new StringBuilder();
             List<String> history = Files.readAllLines(Paths.get(fileName));
             int min;
-            min=(history.size()>100)?(history.size()-100):0;
-            for (int i=min; i<history.size(); i++){
+            min = (history.size() > 100) ? (history.size() - 100) : 0;
+            for (int i = min; i < history.size(); i++) {
                 sb.append(history.get(i)).append(System.lineSeparator());
             }
             chatHistory.appendText(sb.toString());
@@ -40,20 +39,21 @@ public class History {
     }
 
 
-    public  static void startWriter(String login){
+    public static void startWriter(String login) {
         try {
-            writer= new PrintWriter(new FileOutputStream(fileHistoryNameByLogin(login),true),true);
+            writer = new PrintWriter(new FileOutputStream(fileHistoryNameByLogin(login), true), true);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
     }
+
     public static void saveMessage(String message) {
-       writer.println(message);
+        writer.println(message);
     }
 
-    public static void closeWriter (){
-        if (writer!=null){
+    public static void closeWriter() {
+        if (writer != null) {
             writer.close();
         }
     }

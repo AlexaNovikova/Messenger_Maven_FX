@@ -33,95 +33,95 @@ public class MyServer {
 
     }
 
-public void start() throws IOException {
-        logger.log(Level.INFO,"Сервер запущен");
+    public void start() throws IOException {
+        logger.log(Level.INFO, "Сервер запущен");
         //System.out.println("Сервер запущен!");
         service = Executors.newFixedThreadPool(5);
         try {
-        while (true) {
-        waitAndProcessNewClientConnection();
-        }
+            while (true) {
+                waitAndProcessNewClientConnection();
+            }
         } catch (IOException e) {
-                logger.log(Level.SEVERE, "Ошибка создания нового подключения!");
-       // System.out.println("Ошибка создания нового подключения");
-        e.printStackTrace();
+            logger.log(Level.SEVERE, "Ошибка создания нового подключения!");
+            // System.out.println("Ошибка создания нового подключения");
+            e.printStackTrace();
         } finally {
-        serverSocket.close();
+            serverSocket.close();
         }
-        }
+    }
 
-private void waitAndProcessNewClientConnection() throws IOException {
-            logger.log(Level.INFO, "Ожидание пользователя...");
-       // System.out.println("Ожидание пользователя...");
+    private void waitAndProcessNewClientConnection() throws IOException {
+        logger.log(Level.INFO, "Ожидание пользователя...");
+        // System.out.println("Ожидание пользователя...");
         Socket clientSocket = serverSocket.accept();
         logger.log(Level.INFO, "Клиент подключился!");
-       // System.out.println("Клиент подключился!");
-        service.execute(()-> {
-                try {
-                        processClientConnection(clientSocket);
-                } catch (IOException e) {
-                        e.printStackTrace();
-                }
+        // System.out.println("Клиент подключился!");
+        service.execute(() -> {
+            try {
+                processClientConnection(clientSocket);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         });
-        }
+    }
 
-private void processClientConnection(Socket clientSocket) throws IOException {
+    private void processClientConnection(Socket clientSocket) throws IOException {
         ClientHandler clientHandler = new ClientHandler(this, clientSocket);
         clientHandler.handle();
-        }
+    }
 
-public AuthService getAuthService() {
+    public AuthService getAuthService() {
         return authService;
-        }
+    }
 
-public synchronized boolean isUsernameBusy(String clientUsername) {
+    public synchronized boolean isUsernameBusy(String clientUsername) {
         for (ClientHandler client : clients) {
-        if (client.getClientUsername().equals(clientUsername)) {
-        return true;
-        }
+            if (client.getClientUsername().equals(clientUsername)) {
+                return true;
+            }
         }
         return false;
-        }
+    }
 
-public synchronized void subscribe(ClientHandler clientHandler) throws IOException {
+    public synchronized void subscribe(ClientHandler clientHandler) throws IOException {
         clients.add(clientHandler);
-        logger.log(Level.INFO, clientHandler.getClientUsername()+" подключился к чату");
+        logger.log(Level.INFO, clientHandler.getClientUsername() + " подключился к чату");
         List<String> usernames = getAllUsernames();
         broadcastMessage(null, Command.updateUsersListCommand(usernames));
-        }
+    }
 
-public List<String> getAllUsernames() {
+    public List<String> getAllUsernames() {
         List<String> usernames = new ArrayList<>();
         for (ClientHandler client : clients) {
-        usernames.add(client.getClientUsername());
+            usernames.add(client.getClientUsername());
         }
         return usernames;
-        }
+    }
 
-public synchronized void unSubscribe(ClientHandler clientHandler) throws IOException {
-        logger.log(Level.INFO, clientHandler.getClientUsername()+" вышел из чата");
+    public synchronized void unSubscribe(ClientHandler clientHandler) throws IOException {
+        logger.log(Level.INFO, clientHandler.getClientUsername() + " вышел из чата");
         clients.remove(clientHandler);
         List<String> usernames = getAllUsernames();
         broadcastMessage(null, Command.updateUsersListCommand(usernames));
-        }
+    }
 
-public synchronized void broadcastMessage(ClientHandler sender, Command command) throws IOException {
+    public synchronized void broadcastMessage(ClientHandler sender, Command command) throws IOException {
         for (ClientHandler client : clients) {
-        if (client == sender) {
-        continue;
-        }
-        client.sendMessage(command);
+            if (client == sender) {
+                continue;
+            }
+            client.sendMessage(command);
 
         }
-        }
+    }
 
-public synchronized void sendPrivateMessage(String recipient, Command command) throws IOException {
+    public synchronized void sendPrivateMessage(String recipient, Command command) throws IOException {
         for (ClientHandler client : clients) {
-        if (client.getClientUsername().equals(recipient)) {
-        client.sendMessage(command);
-        break;
+            if (client.getClientUsername().equals(recipient)) {
+                client.sendMessage(command);
+                break;
+            }
         }
-        }
-        }
+    }
 
 }

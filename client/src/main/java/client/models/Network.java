@@ -35,14 +35,6 @@ public class Network {
     private String username;
     public String login;
 
-    public ObjectOutputStream getDataOutputStream() {
-        return dataOutputStream;
-    }
-
-    public ObjectInputStream getDataInputStream() {
-        return dataInputStream;
-    }
-
     public Network() {
         this(SERVER_ADRESS, SERVER_PORT);
     }
@@ -51,7 +43,6 @@ public class Network {
         this.host = host;
         this.port = port;
     }
-
 
     public boolean connect() {
         try {
