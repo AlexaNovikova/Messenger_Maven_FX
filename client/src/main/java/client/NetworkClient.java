@@ -23,6 +23,7 @@ public class NetworkClient extends Application {
     private Stage nickChangeStage;
     private Network network;
     private ChatController chatController;
+    private MessageService messageService;
 
     public static void main(String[] args) {
         launch(args);
@@ -37,7 +38,6 @@ public class NetworkClient extends Application {
             showErrorMessage("", "Ошибка подключения к серверу");
             return;
         }
-
         openAuthDialog(primaryStage);
         createChatDialog(primaryStage);
     }

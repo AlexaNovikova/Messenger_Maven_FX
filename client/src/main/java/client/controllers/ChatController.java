@@ -77,7 +77,6 @@ public class ChatController {
         if(message.isEmpty()) {
             return;
         }
-//        appendMessage(network.getUsername() + ": " + message);
         appendMessage("Я: " + message);
         textField.clear();
 
@@ -115,7 +114,6 @@ public class ChatController {
     public void showError(String title, String message) {
         NetworkClient.showErrorMessage(message, title);
     }
-
 
 
     public void updateUsers(List<String> users) {
